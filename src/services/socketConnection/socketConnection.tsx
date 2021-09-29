@@ -180,20 +180,44 @@ class SocketConnection {
 
     reInitializeStream = (video?:boolean, audio?:boolean, type:string='userMedia') => {
         // @ts-ignore
-        const media = type === 'userMedia' ? this.getVideoAudioStream(video, audio) : navigator.mediaDevices.getDisplayMedia({video :true, audio: true});
+        const media = type === 'userMedia' ? this.getVideoAudioStream(video, audio) : navigator.mediaDevices.getDisplayMedia({video :true, audio: {'echoCancellation': true}});
         return new Promise((resolve) => {
             media.then((stream:MediaStream) => {
                 // @ts-ignore
                 const myVideo = this.getMyVideo();
                 if (type === 'displayMedia') {
-                    this.toggleVideoTrack({audio, video});
-                    this.listenToEndStream(stream, {video, audio});
-                    this.socket.emit('display-media', true);
+                    
+                    //handle merge screen audio with voice audio
+                    const audioContext = new AudioContext();
+
+                    navigator.mediaDevices.getUserMedia({ audio: {'echoCancellation': true}, video: false }).then(voiceStream => {
+                        this.toggleVideoTrack({audio, video});
+                        this.listenToEndStream(stream, {video, audio});
+                        this.socket.emit('display-media', true);
+
+                        const userAudio = audioContext.createMediaStreamSource(voiceStream);
+            
+                        const audioDestination = audioContext.createMediaStreamDestination();
+                        userAudio.connect(audioDestination);
+
+                        if(stream.getAudioTracks().length > 0) {
+                            const displayAudio = audioContext.createMediaStreamSource(stream);
+                            displayAudio.connect(audioDestination);
+                        }
+
+                        const tracks = [...stream.getVideoTracks(), ...audioDestination.stream.getTracks()]
+                        const newStream = new MediaStream(tracks)
+                        checkAndAddClass(myVideo, type);
+                        this.createVideo({ id: this.myID, stream: newStream });
+                        replaceStream(newStream);
+                        resolve(true);
+                    })
+                } else {
+                    checkAndAddClass(myVideo, type);
+                    this.createVideo({ id: this.myID, stream });
+                    replaceStream(stream);
+                    resolve(true);
                 }
-                checkAndAddClass(myVideo, type);
-                this.createVideo({ id: this.myID, stream });
-                replaceStream(stream);
-                resolve(true);
             });
         });
     }

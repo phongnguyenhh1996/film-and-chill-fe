@@ -9,10 +9,8 @@ import { ToastContainer } from 'react-toastify';
 import CallIcon from '@material-ui/icons/CallEnd';
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
-import VideocamIcon from '@material-ui/icons/Videocam';
-import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import ChatIcon from '@material-ui/icons/Chat';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Avatar } from '@material-ui/core';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -37,7 +35,7 @@ const RoomComponent = (props: any) => {
     const [camStatus, setCamStatus] = useState(true);
     const [streaming, setStreaming] = useState(false);
     const [chatToggle, setChatToggle] = useState(false);
-    const [userDetails, setUserDetails] = useState(null);
+    const [userDetails, setUserDetails] : any = useState(null);
     const [displayStream, setDisplayStream] = useState(false);
     const [messages, setMessages] = useState([]);
     const [peers, setPeers] = useState([])
@@ -104,15 +102,6 @@ const RoomComponent = (props: any) => {
         setMicStatus(!micStatus);
     }
 
-    const handleMyCam = () => {
-        if (!displayStream) {
-             // @ts-ignore
-            const { toggleVideoTrack } = socketInstance.current;
-            toggleVideoTrack({ video: !camStatus, audio: micStatus });
-            setCamStatus(!camStatus);
-        }
-    }
-
     const handleuserDetails = (userDetails:any) => {
         setUserDetails(userDetails);
     }
@@ -148,7 +137,16 @@ const RoomComponent = (props: any) => {
                 })}
             </div>
             <FootBar className="chat-footbar">
-            <div className="footbar-title">Vi CHAT</div>
+            <div className="footbar-title">Vi CHAT 
+                {peers.map((peer: any) => {
+                    return (
+                        <div key={peer.id}>
+                            <Avatar>{peer?.name && peer.name[0]}</Avatar>
+                            <Video style={{display: 'none'}} stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
+                        </div>
+                    )
+                })}
+            </div>
                 <div className="footbar-wrapper">
                     {streaming && <div className="status-action-btn mic-btn" onClick={handleMyMic} title={micStatus ? 'Disable Mic' : 'Enable Mic'}>
                         {micStatus ? 
@@ -160,13 +158,6 @@ const RoomComponent = (props: any) => {
                     <div className="status-action-btn end-call-btn" onClick={handleDisconnect} title="End Call">
                         <CallIcon></CallIcon>
                     </div>
-                    {streaming && <div className="status-action-btn cam-btn" onClick={handleMyCam} title={camStatus ? 'Disable Cam' : 'Enable Cam'}>
-                        {camStatus ? 
-                            <VideocamIcon></VideocamIcon>
-                            :
-                            <VideocamOffIcon></VideocamOffIcon>
-                        }
-                    </div>}
                 </div>
                 <div>
                     <div className="screen-share-btn" onClick={toggleScreenShare}>
