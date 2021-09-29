@@ -200,8 +200,7 @@ class SocketConnection {
     
     removeVideo = (id:string) => {
         delete this.videoContainer[id];
-        const video = document.getElementById(id);
-        if (video) video.remove();
+        this.settings.updateInstance('peers', [...Object.values(this.videoContainer)])
     }
 
     destoryConnection = () => {

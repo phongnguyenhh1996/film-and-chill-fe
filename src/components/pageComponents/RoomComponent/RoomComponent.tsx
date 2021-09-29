@@ -32,7 +32,7 @@ const Video = ({ stream, ...rest }: any) => {
   };
 
 const RoomComponent = (props: any) => {
-    let socketInstance = useRef(null);
+    let socketInstance: any = useRef(null);
     const [micStatus, setMicStatus] = useState(true);
     const [camStatus, setCamStatus] = useState(true);
     const [streaming, setStreaming] = useState(false);
@@ -56,12 +56,16 @@ const RoomComponent = (props: any) => {
     const startConnection = () => {
         let params = getObjectFromUrl();
         if (!params) params = {quality: 12}
-         // @ts-ignore
-        socketInstance.current = createSocketConnectionInstance({
-            updateInstance: updateFromInstance,
-            params,
-            userDetails
-        });
+        // get media permission first
+        // @ts-ignore
+        const myNavigator = navigator.mediaDevices.getUserMedia || navigator.mediaDevices.webkitGetUserMedia || navigator.mediaDevices.mozGetUserMedia || navigator.mediaDevices.msGetUserMedia;
+        myNavigator({video: true, audio: true}).then(() => {
+            socketInstance.current = createSocketConnectionInstance({
+                updateInstance: updateFromInstance,
+                params,
+                userDetails
+            });
+        })
     }
 
     const updateFromInstance = (key:string, value:any) => {
