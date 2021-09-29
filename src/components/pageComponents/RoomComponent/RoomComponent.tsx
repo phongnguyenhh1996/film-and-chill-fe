@@ -129,7 +129,7 @@ const RoomComponent = (props: any) => {
             }
             <div id="room-container">
                 {peers.map((peer: any) => {
-                    return (
+                    return peer.shareScreen && (
                         <div key={peer.id}>
                             <Video stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
                         </div>

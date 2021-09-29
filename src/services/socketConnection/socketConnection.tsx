@@ -47,6 +47,22 @@ class SocketConnection {
             toast.info(`${data.message.message} By ${data.userData.name}`)
         });
         this.socket.on('display-media', (data:any) => {
+            this.videoContainer[data.userID] = {...this.videoContainer[data.userID]}
+            let newPeers = Object.values(this.videoContainer)
+            newPeers = newPeers.map((peer: any) => {
+                if (peer.id == data.userID) {
+                    return ({
+                        ...peer,
+                        shareScreen: true
+                    })
+                } else {
+                    return ({
+                        ...peer,
+                        shareScreen: false
+                    })
+                }
+            })
+            this.settings.updateInstance('peers', newPeers)
             if (data.value) checkAndAddClass(this.getMyVideo(data.userID), 'displayMedia');
             else checkAndAddClass(this.getMyVideo(data.userID), 'userMedia');
         });
