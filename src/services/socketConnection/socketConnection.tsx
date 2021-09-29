@@ -102,7 +102,6 @@ class SocketConnection {
 
     setPeersListeners = (stream:MediaStream) => {
         this.myPeer.on('call', (call:any) => {
-            call.answer(stream);
             call.on('stream', (userVideoStream:MediaStream) => {
                 this.createVideo({ id: call.metadata.id, stream: userVideoStream });
             });
@@ -114,6 +113,7 @@ class SocketConnection {
                 console.log('peer error ------');
                 this.removeVideo(call.metadata.id);
             });
+            call.answer(stream);
             peers[call.metadata.id] = call;
         });
     }
@@ -121,7 +121,9 @@ class SocketConnection {
     newUserConnection = (stream:MediaStream) => {
         this.socket.on('new-user-connect', (userData:any) => {
             console.log('New User Connected', userData);
-            this.connectToNewUser(userData, stream);
+            window.setTimeout(() => {
+                this.connectToNewUser(userData, stream)
+            }, 1000)
         });
     }
 
@@ -149,24 +151,31 @@ class SocketConnection {
     }
 
     createVideo = (createObj:CreateVideo) => {
-        if (!this.videoContainer[createObj.id]) {
-            this.videoContainer[createObj.id] = {
-                ...createObj,
-            };
-            const roomContainer = document.getElementById('room-container');
-            const videoContainer = document.createElement('div');
-            const video = document.createElement('video');
-            video.srcObject = this.videoContainer[createObj.id].stream;
-            video.id = createObj.id;
-            video.autoplay = true;
-            if (this.myID === createObj.id) video.muted = true;
-            videoContainer.appendChild(video)
-            roomContainer?.append(videoContainer);
-        } else {
-            // @ts-ignore
-            const videoDom = document.getElementById(createObj.id) as any;
-            videoDom.srcObject = createObj.stream;
-        }
+        this.videoContainer[createObj.id] = {
+            ...createObj,
+            muted: this.myID === createObj.id
+        };
+        this.settings.updateInstance('peers', [...Object.values(this.videoContainer)])
+        // if (!this.videoContainer[createObj.id]) {
+        //     this.videoContainer[createObj.id] = {
+        //         ...createObj,
+        //         muted: this.myID === createObj.id
+        //     };
+        //     this.settings.updateInstance('peers', Object.values(this.videoContainer))
+        //     const roomContainer = document.getElementById('room-container');
+        //     const videoContainer = document.createElement('div');
+        //     const video = document.createElement('video');
+        //     video.srcObject = this.videoContainer[createObj.id].stream;
+        //     video.id = createObj.id;
+        //     video.autoplay = true;
+        //     if (this.myID === createObj.id) video.muted = true;
+        //     videoContainer.appendChild(video)
+        //     roomContainer?.append(videoContainer);
+        // } else {
+        //     // @ts-ignore
+        //     const videoDom = document.getElementById(createObj.id) as any;
+        //     videoDom.srcObject = createObj.stream;
+        // }
     }
 
     reInitializeStream = (video?:boolean, audio?:boolean, type:string='userMedia') => {

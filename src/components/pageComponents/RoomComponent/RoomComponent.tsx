@@ -16,6 +16,21 @@ import { CircularProgress } from '@material-ui/core';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+const Video = ({ stream, ...rest }: any) => {
+    const localVideo: any = useRef(null);
+  
+    // localVideo.current is null on first render
+    // localVideo.current.srcObject = stream;
+    
+    useEffect(() => {
+      // Let's update the srcObject only after the ref has been set
+      // and then every time the stream prop updates
+      if (localVideo.current) localVideo.current.srcObject = stream;
+    }, [stream, localVideo]);
+  
+    return <video ref={localVideo} {...rest}/>
+  };
+
 const RoomComponent = (props: any) => {
     let socketInstance = useRef(null);
     const [micStatus, setMicStatus] = useState(true);
@@ -25,6 +40,7 @@ const RoomComponent = (props: any) => {
     const [userDetails, setUserDetails] = useState(null);
     const [displayStream, setDisplayStream] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [peers, setPeers] = useState([])
 
     useEffect(() => {
         return () => {
@@ -53,6 +69,7 @@ const RoomComponent = (props: any) => {
          // @ts-ignore
         if (key === 'message') setMessages([...value]);
         if (key === 'displayStream') setDisplayStream(value);
+        if (key === 'peers') setPeers(value); 
     }
 
     useLayoutEffect(() => {
@@ -117,7 +134,15 @@ const RoomComponent = (props: any) => {
                     <CircularProgress className="stream-loader" size={24} color="primary" />
                 </div>
             }
-            <div id="room-container"></div>
+            <div id="room-container">
+                {peers.map((peer: any) => {
+                    return (
+                        <div key={peer.id}>
+                            <Video stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
+                        </div>
+                    )
+                })}
+            </div>
             <FootBar className="chat-footbar">
             <div className="footbar-title">Vi CHAT</div>
                 <div className="footbar-wrapper">
