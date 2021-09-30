@@ -1,6 +1,7 @@
 import openSocket from "socket.io-client";
 import Peer from "peerjs";
 import { toast } from "react-toastify";
+import preferOpus from './preferOpus'
 
 let socketInstance: any = null;
 let peers: any = {};
@@ -142,7 +143,7 @@ class SocketConnection {
         console.log("peer error ------");
         this.removeVideo(call.metadata.id);
       });
-      call.answer(stream);
+      call.answer(stream, {sdpTransform: preferOpus});
       peers[call.metadata.id] = call;
     });
   };
@@ -160,6 +161,7 @@ class SocketConnection {
     const { userID } = userData;
     const call = this.myPeer.call(userID, stream, {
       metadata: { id: this.myID },
+      sdpTransform: preferOpus,
     });
     call.on("stream", (userVideoStream: MediaStream) => {
       this.createVideo({ id: userID, stream: userVideoStream, userData });
@@ -223,12 +225,7 @@ class SocketConnection {
         ? this.getVideoAudioStream(video, audio)
         : navigator.mediaDevices.getDisplayMedia({
             video: true,
-            audio: {
-              echoCancellation: false,
-              // @ts-ignore
-              autoGainControl: false,
-              noiseSuppression: false,
-            },
+            audio: true,
           });
     return new Promise((resolve) => {
       media.then((stream: MediaStream) => {
@@ -240,12 +237,7 @@ class SocketConnection {
 
           navigator.mediaDevices
             .getUserMedia({
-              audio: {
-                echoCancellation: false,
-                // @ts-ignore
-                autoGainControl: false,
-                noiseSuppression: false,
-              },
+              audio: true,
               video: false,
             })
             .then((voiceStream) => {
