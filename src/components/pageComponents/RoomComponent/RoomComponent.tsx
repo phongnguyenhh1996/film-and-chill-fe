@@ -129,7 +129,7 @@ const RoomComponent = (props: any) => {
             }
             <div id="room-container">
                 {peers.map((peer: any) => {
-                    return peer.shareScreen && (
+                    return (
                         <div key={peer.id}>
                             <Video stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
                         </div>
@@ -137,13 +137,10 @@ const RoomComponent = (props: any) => {
                 })}
             </div>
             <FootBar className="chat-footbar">
-            <div className="footbar-title">Vi CHAT 
+            <div className="footbar-title">WatchTogether
                 {peers.map((peer: any) => {
                     return (
-                        <div key={peer.id}>
-                            <Avatar>{peer?.name && peer.name[0]}</Avatar>
-                            <Video style={{display: 'none'}} stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
-                        </div>
+                        <Video style={{height: '60px'}} stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
                     )
                 })}
             </div>
