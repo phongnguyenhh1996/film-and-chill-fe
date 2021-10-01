@@ -44,16 +44,16 @@ body {
         }
         & > .display-media {
             display: block;
+            video {
+                -webkit-transform: scaleX(1);
+                transform: scaleX(1);
+            }
         }
         video {
             -webkit-transform: scaleX(-1);
             transform: scaleX(-1);
             width: 100%;
             height: 100%;
-        }
-        .display-media {
-            -webkit-transform: scaleX(1);
-            transform: scaleX(1);
         }
         
     }
