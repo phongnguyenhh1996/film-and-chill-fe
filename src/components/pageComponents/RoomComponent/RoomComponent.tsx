@@ -144,18 +144,13 @@ const RoomComponent = (props: any) => {
                     )
                 })}
             </div>
-                <div className="footbar-wrapper">
-                    {streaming && <div className="status-action-btn mic-btn" onClick={handleMyMic} title={micStatus ? 'Disable Mic' : 'Enable Mic'}>
+            {streaming && <div className="status-action-btn mic-btn" onClick={handleMyMic} title={micStatus ? 'Disable Mic' : 'Enable Mic'}>
                         {micStatus ? 
                             <MicIcon></MicIcon>
                             :
                             <MicOffIcon></MicOffIcon>
                         }
                     </div>}
-                    <div className="status-action-btn end-call-btn" onClick={handleDisconnect} title="End Call">
-                        <CallIcon></CallIcon>
-                    </div>
-                </div>
                 <div>
                     <div className="screen-share-btn" onClick={toggleScreenShare}>
                         <h4 className="screen-share-btn-text">{displayStream ? 'Stop Screen Share' : 'Share Screen'}</h4>

@@ -33,7 +33,7 @@ body {
     #room-container {
         background-color: black;
         display: grid;
-        height: calc(100vh - 64px);
+        height: 100vh;
         grid-gap: 6px 6px;
         grid-template-columns: repeat(auto-fit, minmax(400px, auto));
         grid-template-rows: repeat(auto-fit, minmax(100px, auto));
@@ -87,13 +87,19 @@ body {
     }
     .footbar-wrapper {
         @include flex-container();
+        opacity: 0;
         justify-content: space-between;
         top: unset;
         bottom: 0;
-        position: relative;
-        background-color: white;
+        position: absolute;
+        background-color: #fff;
         min-width: 200px;
         max-width: 100%;
+        transition: all .3s ease;
+        &:hover {
+            opacity: 1;
+        }
+
         .footbar-tool {
             width: 100%;
             padding: 0;
