@@ -375,8 +375,8 @@ const replaceStream = (mediaStream: MediaStream) => {
 
 const checkAndAddClass = (video?: any, type: string = "userMedia") => {
   if (video?.classList?.length === 0 && type === "displayMedia")
-    video.classList.add("display-media");
-  else video.classList.remove("display-media");
+    video.parentNode.classList.add("display-media");
+  else video.parentNode.classList.remove("display-media");
 };
 
 const changeMediaView = (userID: any, status: boolean) => {
