@@ -225,7 +225,7 @@ class SocketConnection {
         ? this.getVideoAudioStream(video, audio)
         : navigator.mediaDevices.getDisplayMedia({
             video: true,
-            audio: true,
+            audio: { channels: 2, autoGainControl: false, echoCancellation: false, noiseSuppression: false } as any,
           });
     return new Promise((resolve) => {
       media.then((stream: MediaStream) => {
@@ -237,7 +237,7 @@ class SocketConnection {
 
           navigator.mediaDevices
             .getUserMedia({
-              audio: true,
+              audio: { channels: 2, autoGainControl: false, echoCancellation: false, noiseSuppression: false } as any,
               video: false,
             })
             .then((voiceStream) => {

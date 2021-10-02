@@ -140,7 +140,7 @@ const RoomComponent = (props: any) => {
             <div className="footbar-title">WatchTogether
                 {peers.map((peer: any) => {
                     return (
-                        <Video style={{height: '60px'}} stream={peer.stream} id={peer.id} autoPlay muted={peer.muted}/>
+                        <Video style={{height: '60px'}} stream={peer.stream} id={peer.id} autoPlay muted={true}/>
                     )
                 })}
             </div>
